@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 import numpy as np
 import pandas as pd
 from tensorflow.keras.models import load_model
@@ -32,18 +32,25 @@ def preprocess_data(ticker, start_date, end_date, time_step=100):
     X = X.reshape(X.shape[0], X.shape[1], 1)
     return X, data
 
-# Endpoint to get stock prediction
+# Homepage with input form
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# Endpoint to handle prediction request
 @app.route('/predict', methods=['POST'])
 def predict():
-    request_data = request.get_json()
-    ticker = request_data['ticker']
-    start_date = request_data['start_date']
-    end_date = request_data['end_date']
+    # Fetch input data from HTML form
+    ticker = request.form['ticker']
+    start_date = request.form['start_date']
+    end_date = request.form['end_date']
 
+    # Preprocess data and make predictions
     X, data = preprocess_data(ticker, start_date, end_date)
     predictions = model.predict(X)
     predictions = scaler.inverse_transform(predictions)
     
+    # Prepare response with predictions and dates
     response = {
         'ticker': ticker,
         'predictions': predictions.tolist(),
