@@ -1,4 +1,4 @@
-import pickle
+import joblib
 import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
@@ -9,12 +9,10 @@ from tensorflow.keras.models import load_model
 app = Flask(__name__)
 
 # Load the trained LSTM model
-with open('stock_lstm_model.pkl', 'rb') as f:
-    model = pickle.load(f)
+model = load_model('stock_lstm_model.h5')
 
-# Assuming scaler was saved separately
-with open('scaler.pkl', 'rb') as f:
-    scaler = pickle.load(f)
+# Load the scaler
+scaler = joblib.load('scaler.pkl')
 
 def preprocess_data(ticker, start_date, end_date, time_step=100):
     # Download data
