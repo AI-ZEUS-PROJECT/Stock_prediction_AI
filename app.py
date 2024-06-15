@@ -9,7 +9,7 @@ from tensorflow.keras.models import load_model
 app = Flask(__name__)
 
 # Load the trained LSTM model
-model = load_model('stock_lstm_model.h5')
+model = load_model('stock_lstm_model.h5')  # or 'stock_lstm_model' for SavedModel format
 
 # Load the scaler
 scaler = joblib.load('scaler.pkl')
