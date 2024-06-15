@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import load_model
 import yfinance as yf
 
 app = Flask(__name__)
