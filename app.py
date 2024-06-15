@@ -4,6 +4,7 @@ import pandas as pd
 from flask import Flask, request, jsonify
 from sklearn.preprocessing import MinMaxScaler
 import yfinance as yf
+from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
 
@@ -11,8 +12,9 @@ app = Flask(__name__)
 with open('stock_lstm_model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-# Define the scaler (assuming it was trained with the model)
-scaler = MinMaxScaler()
+# Assuming scaler was saved separately
+with open('scaler.pkl', 'rb') as f:
+    scaler = pickle.load(f)
 
 def preprocess_data(ticker, start_date, end_date, time_step=100):
     # Download data
@@ -24,7 +26,7 @@ def preprocess_data(ticker, start_date, end_date, time_step=100):
         raise ValueError("Not enough data to create a valid dataset")
 
     # Scale the data
-    scaled_data = scaler.fit_transform(data)
+    scaled_data = scaler.transform(data)
 
     # Create dataset
     def create_dataset(data, time_step):
@@ -45,10 +47,10 @@ def predict():
     ticker = request_data['ticker']
     start_date = request_data['start_date']
     end_date = request_data['end_date']
-    time_step = request_data.get('time_step', 100)
+    time_step = request_data.get('time_step', 100)  # Default to 100 if not provided
 
     try:
-        X, original_data = preprocess_data(ticker, start_date, end_date)
+        X, original_data = preprocess_data(ticker, start_date, end_date, time_step)
 
         # Make prediction
         y_pred = model.predict(X)
